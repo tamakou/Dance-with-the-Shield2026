@@ -42,7 +42,12 @@ namespace DWS.Editor
             var cam = Camera.main;
             if (cam == null)
             {
-                var anyCam = Object.FindObjectsOfType<Camera>().FirstOrDefault();
+                var anyCam =
+#if UNITY_2023_1_OR_NEWER || UNITY_6000_0_OR_NEWER
+                    Object.FindObjectsByType<Camera>(FindObjectsInactive.Include, FindObjectsSortMode.None).FirstOrDefault();
+#else
+                    Object.FindObjectsOfType<Camera>().FirstOrDefault();
+#endif
                 cam = anyCam;
             }
 
@@ -58,14 +63,24 @@ namespace DWS.Editor
                 so.FindProperty("_musicPlayer").objectReferenceValue = music;
 
                 // ShieldHeldDetector: create one if missing
-                var det = Object.FindObjectOfType<ShieldHeldDetector>();
+                var det =
+#if UNITY_2023_1_OR_NEWER || UNITY_6000_0_OR_NEWER
+                    Object.FindAnyObjectByType<ShieldHeldDetector>();
+#else
+                    Object.FindObjectOfType<ShieldHeldDetector>();
+#endif
                 if (det == null)
                 {
                     var detGo = new GameObject("DWS_ShieldHeldDetector");
                     det = detGo.AddComponent<ShieldHeldDetector>();
 
                     // Try find a Grabbable under ShieldMarker
-                    var grabbable = Object.FindObjectsOfType<Grabbable>()
+                    var grabbable =
+#if UNITY_2023_1_OR_NEWER || UNITY_6000_0_OR_NEWER
+                        Object.FindObjectsByType<Grabbable>(FindObjectsInactive.Include, FindObjectsSortMode.None)
+#else
+                        Object.FindObjectsOfType<Grabbable>()
+#endif
                         .FirstOrDefault(g => g != null && g.GetComponentInParent<ShieldMarker>() != null);
                     if (grabbable != null)
                     {
@@ -85,7 +100,11 @@ namespace DWS.Editor
 
         private static void EnsureEventSystem()
         {
+            #if UNITY_2023_1_OR_NEWER || UNITY_6000_0_OR_NEWER
+            if (Object.FindAnyObjectByType<EventSystem>() != null) return;
+#else
             if (Object.FindObjectOfType<EventSystem>() != null) return;
+#endif
 
             var esGo = new GameObject("EventSystem");
             esGo.AddComponent<EventSystem>();

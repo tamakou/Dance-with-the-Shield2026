@@ -53,11 +53,19 @@ namespace DWS
 
         private void Reset()
         {
+#if UNITY_2023_1_OR_NEWER || UNITY_6000_0_OR_NEWER
+            _arrowSpawner = FindAnyObjectByType<ArrowSpawner>();
+            _arrowPool = FindAnyObjectByType<ArrowPool>();
+            _hud = FindAnyObjectByType<DwsHud>();
+            _resultUI = FindAnyObjectByType<ResultUI>();
+            _shieldHeldDetector = FindAnyObjectByType<ShieldHeldDetector>();
+#else
             _arrowSpawner = FindObjectOfType<ArrowSpawner>();
             _arrowPool = FindObjectOfType<ArrowPool>();
             _hud = FindObjectOfType<DwsHud>();
             _resultUI = FindObjectOfType<ResultUI>();
             _shieldHeldDetector = FindObjectOfType<ShieldHeldDetector>();
+#endif
         }
 
         private void Start()
